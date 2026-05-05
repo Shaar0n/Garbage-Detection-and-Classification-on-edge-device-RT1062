@@ -1,0 +1,19 @@
+# Minimal requirements for model conversion, quantization and testing
+# Use this inside a virtual environment for conversion/quantization tasks.
+
+# TensorFlow (required for conversion and quantization scripts)
+tensorflow>=2.13.0
+
+# Model optimization and conversion
+tensorflow-model-optimization
+# Optional helper for TFLite tools (may require platform-specific wheels)
+tflite-support
+
+# Common utilities
+numpy
+pillow
+opencv-python
+pyyaml
+
+# If you need to run TFLite on the host for benchmarking, optionally install:
+# tflite-runtime

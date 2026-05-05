@@ -1,0 +1,180 @@
+# QUICK REFERENCE - Garbage Classifier Training & Deployment
+
+## 🚀 Get Started in 30 Seconds
+
+```powershell
+cd C:\Users\shall\Mini_Proj\garbage_classifier
+.\run_pipeline.bat
+```
+
+Choose option **5** when prompted to run everything!
+
+---
+
+## 📁 Project Root
+```
+C:\Users\shall\Mini_Proj\garbage_classifier\
+```
+
+## 📊 Dataset Location
+```
+C:\Users\shall\Mini_Proj\Garbage Classifier.v27i.tensorflow\
+├── train/       (images + _annotations.csv)
+├── valid/       (images + _annotations.csv)
+└── test/        (images + _annotations.csv)
+```
+
+## 🔧 Manual Steps (If Not Using Pipeline)
+
+```powershell
+# 1. Activate environment
+C:\Users\shall\Mini_Proj\tfod_env\Scripts\Activate.ps1
+
+# 2. Navigate to project
+cd C:\Users\shall\Mini_Proj\garbage_classifier\scripts
+
+# 3. Run steps individually
+python prepare_dataset.py          # Prepare data
+python train_tflite_model.py      # Train model (2-4 hours)
+python test_model.py               # Test model
+python openmv_export.py            # Prepare for deployment
+```
+
+## 📌 Important Files
+
+| File | Purpose |
+|------|---------|
+| `README.md` | Quick start guide |
+| `SETUP_GUIDE.md` | Complete setup instructions |
+| `run_pipeline.bat` | Automated pipeline (RECOMMENDED) |
+| `requirements.txt` | Training dependencies |
+| `scripts/setup_gpu_env.ps1` | GPU environment setup |
+| `verify_setup.py` | Verify installation |
+
+## ⚡ Performance
+
+| Phase | Time | GPU |
+|-------|------|-----|
+| Data prep | ~5-10 min | CPU |
+| Training | 2-4 hours | GPU (RTX 3060) |
+| Export | ~2 min | CPU |
+| **Total** | **~2-4 hours** | ✓ Required |
+
+## 📤 Deployment to OpenMV RT1062
+
+After training completes:
+
+**Files to copy to MicroSD:**
+```
+/sd/
+├── garbage_classifier.tflite
+├── labels.json
+└── main.py
+```
+
+**Location:** `C:\Users\shall\Mini_Proj\garbage_classifier\output\openmv_deployment\`
+
+**Steps:**
+1. Format MicroSD as FAT32
+2. Copy 3 files above to `/sd/` root
+3. Insert into OpenMV Cam RT1062
+4. Connect to OpenMV IDE
+5. Open `/sd/main.py` and click Run
+
+## 🎛️ Adjustable Parameters
+
+Edit `train_tflite_model.py` **before training:**
+
+```python
+self.IMG_SIZE = 320          # Image input size (224/256/320/384)
+self.BATCH_SIZE = 16         # Reduce if out of memory
+self.LEARNING_RATE = 1e-4    # Keep as-is for good results
+self.EPOCHS = 50             # Increase for better accuracy
+```
+
+## 🐛 Troubleshooting
+
+### GPU not detected?
+```powershell
+python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
+```
+
+### Out of memory?
+```python
+# In train_tflite_model.py:
+self.BATCH_SIZE = 8          # Reduce batch size
+self.IMG_SIZE = 224          # Reduce image size
+```
+
+### Model training failed?
+```powershell
+# Check dataset is properly formatted
+python verify_setup.py
+```
+
+### Poor accuracy on camera?
+- Check lighting conditions match training data
+- Retrain with more epochs
+- Use larger IMG_SIZE during training
+
+## 📊 Training Monitoring
+
+**Watch training progress:**
+```powershell
+tensorboard --logdir=output\trained_models\logs
+```
+
+Then open: `http://localhost:6006/`
+
+## 📦 Output Locations
+
+| Content | Location |
+|---------|----------|
+| TFLite model | `output/trained_models/garbage_classifier.tflite` |
+| Keras model | `output/trained_models/garbage_classifier_final.h5` |
+| Class mapping | `output/trained_models/model_metadata.json` |
+| OpenMV script | `output/openmv_deployment/main_openmv.py` |
+| Quantized model | `output/openmv_deployment/garbage_classifier_quantized_int8.tflite` |
+
+## ✅ Checklist
+
+- [x] Project structure created
+- [x] GPU environment setup script
+- [x] Dataset converter (CSV → TFRecord)
+- [x] Training pipeline with GPU
+- [x] Model testing & validation
+- [x] OpenMV deployment preparation
+- [x] Complete documentation
+- [x] Automated pipeline script
+
+## 🎯 Next Steps
+
+1. **Run Pipeline:** `.\run_pipeline.bat`
+2. **Wait for Training:** 2-4 hours
+3. **Copy to MicroSD:** Files from `output/openmv_deployment/`
+4. **Deploy to OpenMV:** Follow DEPLOYMENT_GUIDE.md
+5. **Test on Camera:** Run main.py via OpenMV IDE
+
+## 💡 Pro Tips
+
+- First run of `setup_gpu_env.ps1` takes longest (GPU drivers)
+- Use smaller images (224×224) for faster training, larger (384×384) for better accuracy
+- Save model checkpoint before stopping training
+- Test model locally before deploying to camera
+- Use `test_model.py` to verify accuracy first
+
+## 📞 Help
+
+See documentation:
+- **Quick Start:** README.md
+- **Complete Guide:** SETUP_GUIDE.md  
+- **OpenMV Deploy:** output/openmv_deployment/DEPLOYMENT_GUIDE.md
+- **Troubleshooting:** SETUP_GUIDE.md → Common Issues
+
+---
+
+**Status: ✓ READY TO USE**
+
+Your project is fully configured and ready to train!
+
+Start with: `.\run_pipeline.bat`
